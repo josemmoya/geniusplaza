@@ -10,7 +10,7 @@ import gdata.docs.client
 from oauth2client.service_account import ServiceAccountCredentials
 from natsort import natsorted
 
-writers = [ 'jose.m.moya@gmail.com', 'ana.lopezeiranova@gmail.com' ]
+writers = [ 'xxxx@gmail.com' ]
 # name definitions
 APP_NAME = 'PreK12Plaza'
 name_spr = 'PreK12Plaza Learning Objects - Test'
