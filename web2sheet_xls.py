@@ -306,21 +306,21 @@ def gspread_update_grade (ws, row, objs):
 def main(argv):
 
     parser = argparse.ArgumentParser(description='Extract learning objects from PreK12Plaza.')
-    parser.add_argument('--diff', help="Difference withwith previous excel file")
+    parser.add_argument('--diff', help="Difference withwith previous excel file", action="append")
     
     args = parser.parse_args()
 
-    if args.diff:
+    for f in args.diff:
         try:
             nprev = 0
-            prev_wb = xlrd.open_workbook(args.diff)
+            prev_wb = xlrd.open_workbook(f)
             for s in prev_wb.sheets():
                 for row in range(1, s.nrows):
                     for col in range(s.ncols):
                         if s.cell(0, col).value == 'Resource URL':
                             previous.append(s.cell(row, col).value)
                             nprev += 1
-            print "Added %d previous learning objects" % (nprev)
+            print "Added %d previous learning objects from %s" % (nprev, f)
         except:
             pass
 
