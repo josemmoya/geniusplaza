@@ -9,7 +9,7 @@ from natsort import natsorted
 import xlsxwriter, xlrd
 import argparse
 
-name_spr = 'PreK12Plaza Learning Objects'
+name_spr = 'GeniusPlaza Learning Objects'
 
 filter = {
     'type': 'all',
