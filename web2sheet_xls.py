@@ -9,7 +9,7 @@ from natsort import natsorted
 import xlsxwriter, xlrd
 import argparse
 
-name_spr = 'PreK12Plaza Learning Objects'
+name_spr = 'GeniusPlaza Learning Objects'
 
 filter = {
     'type': 'all',
@@ -255,18 +255,18 @@ search = { 'PreK Math':
 # URLs of previously existing learning objects
 previous = []
 
-def prek12plaza_get (grade, domains):
+def geniusplaza_get (grade, domains):
     results = []
     filter['n'] = 1
     filter['subject'] = search[grade][0]
     for domain in natsorted(domains):
         filter['domain'] = domains[domain]
-        str = urllib2.urlopen("https://www.prek12plaza.com/bank_educators/get_ajax?sEcho=2&iColumns=1&sColumns=&iDisplayStart=0&iDisplayLength={n}&mDataProp_0=0&a=get_page&keyword=undefined&type={type}&domain={domain}&standard={standard}&language={language}&subject={subject}&assign=all".format(**filter)).read()
+        str = urllib2.urlopen("https://www.geniusplaza.com/bank_educators/get_ajax?sEcho=2&iColumns=1&sColumns=&iDisplayStart=0&iDisplayLength={n}&mDataProp_0=0&a=get_page&keyword=undefined&type={type}&domain={domain}&standard={standard}&language={language}&subject={subject}&assign=all".format(**filter)).read()
         data=json.JSONDecoder().decode(str)
 
         filter['n'] = int(data['iTotalRecords'])
         print "Grade %s, domain %s : %d objects" % (grade, domain, filter['n'])
-        str = urllib2.urlopen("https://www.prek12plaza.com/bank_educators/get_ajax?sEcho=2&iColumns=6&sColumns=&iDisplayStart=0&iDisplayLength={n}&mDataProp_0=0&mDataProp_1=1&mDataProp_2=2&mDataProp_3=3&mDataProp_4=4&mDataProp_5=5&a=get_page&keyword=undefined&type={type}&domain={domain}&standard={standard}&language={language}&subject={subject}&assign=all".format(**filter)).read()
+        str = urllib2.urlopen("https://www.geniusplaza.com/bank_educators/get_ajax?sEcho=2&iColumns=6&sColumns=&iDisplayStart=0&iDisplayLength={n}&mDataProp_0=0&mDataProp_1=1&mDataProp_2=2&mDataProp_3=3&mDataProp_4=4&mDataProp_5=5&a=get_page&keyword=undefined&type={type}&domain={domain}&standard={standard}&language={language}&subject={subject}&assign=all".format(**filter)).read()
         data = json.JSONDecoder().decode(str)
 
         objs = data['aaData']
@@ -305,8 +305,8 @@ def gspread_update_grade (ws, row, objs):
 
 def main(argv):
 
-    parser = argparse.ArgumentParser(description='Extract learning objects from PreK12Plaza.')
-    parser.add_argument('--diff', help="Difference withwith previous excel file", action="append")
+    parser = argparse.ArgumentParser(description='Extract learning objects from GeniusPlaza.')
+    parser.add_argument('--diff', help="difference with previous excel file", action="append")
     
     args = parser.parse_args()
 
@@ -318,7 +318,8 @@ def main(argv):
                 for row in range(1, s.nrows):
                     for col in range(s.ncols):
                         if s.cell(0, col).value == 'Resource URL':
-                            previous.append(s.cell(row, col).value)
+                            url = s.cell(row, col).value.replace("www.prek12plaza.com","www.geniusplaza.com")
+                            previous.append(url)
                             nprev += 1
             print "Added %d previous learning objects from %s" % (nprev, f)
         except:
@@ -335,7 +336,7 @@ def main(argv):
             ws.write(0, i, fields[i])
 
         domains = search[grade][1]
-        objs = prek12plaza_get (grade, domains)
+        objs = geniusplaza_get (grade, domains)
         gspread_update_grade (ws, 1, objs)
         #row += len(objs)
 
